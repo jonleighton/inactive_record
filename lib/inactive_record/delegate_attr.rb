@@ -25,7 +25,8 @@ module InactiveRecord::DelegateAttr
           end
         end
         
-        delegated_attrs[method_name] = [options[:to].to_s, attr_name]
+        delegated_attrs[options[:to].to_s] ||= {}
+        delegated_attrs[options[:to].to_s][method_name] = attr_name
       end
     end
   end
@@ -35,9 +36,14 @@ module InactiveRecord::DelegateAttr
     # Add errors from the attributes which are delegated using delegate_attr to a
     # given to an ActiveRecord::Errors object
     def add_delegated_attribute_errors_to(errors)
-      self.class.delegated_attrs.each_pair do |from, to|
-        Array(to.first.errors[to.last]).each do |error|
-          errors.add(from, error)
+      self.class.delegated_attrs.each_pair do |record, delegations|
+        record = send(record)
+        record.valid?
+        
+        delegations.each_pair do |from, to|
+          Array(record.errors[to]).each do |error|
+            errors.add(from, error)
+          end
         end
       end
     end
