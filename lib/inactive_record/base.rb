@@ -1,6 +1,7 @@
 module InactiveRecord::Base
   def self.included(klass)
     klass.send(:extend, ClassMethods)
+    klass.send(:include, InactiveRecord::DelegateAttr)
   end
   
   module ClassMethods
@@ -24,6 +25,22 @@ module InactiveRecord::Base
     self.attributes = params
   end
   
+  def attributes=(params)
+    params.each_pair do |attr_name, attr_value|
+      send("#{attr_name}=", attr_value)
+    end
+  end
+  
+  def errors
+    @errors ||= ActiveRecord::Errors.new(self)
+  end
+  
+  def valid?
+    errors.clear
+    add_delegated_attribute_errors_to(errors)
+    errors.empty?
+  end
+  
   # Implement your own save semantics here. This method should return true if the save
   # is successful, and false otherwise
   def save
@@ -34,7 +51,7 @@ module InactiveRecord::Base
     if save
       true
     else
-      raise RecordInvalid.new(self)
+      raise InactiveRecord::RecordInvalid.new(self)
     end
   end
   
