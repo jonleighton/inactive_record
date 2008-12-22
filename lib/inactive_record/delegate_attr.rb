@@ -4,16 +4,12 @@ module InactiveRecord::DelegateAttr
   end
   
   module ClassMethods
-    def delegated_attrs
-      @delegated_attrs ||= {}
-    end
-    
     def delegate_attr(*args)
       options = args.last.is_a?(Hash) ? args.pop : {}
       raise ArgumentError, "you must specify the :to option" if options[:to].nil?
       
       args.each do |attr_name|
-        method_name = options[:prefix] ? "#{options[:to]}_#{attr_name}" : attr_name
+        method_name = options[:prefix] ? "#{options[:to]}_#{attr_name}" : attr_name.to_s
         
         class_eval do
           define_method method_name do
@@ -28,6 +24,10 @@ module InactiveRecord::DelegateAttr
         delegated_attrs[options[:to].to_s] ||= {}
         delegated_attrs[options[:to].to_s][method_name] = attr_name
       end
+    end
+    
+    def delegated_attrs
+      @delegated_attrs ||= {}
     end
   end
   

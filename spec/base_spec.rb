@@ -53,10 +53,6 @@ describe "a class which include InactiveRecord::Base" do
   end
 end
 
-class Foo
-  include InactiveRecord::Base
-end
-
 class ActiveRecord
   class Errors
   end
@@ -64,7 +60,11 @@ end
 
 describe "an instance of a class which includes InactiveRecord::Base" do
   before do
-    @object = Foo.new
+    @klass = Class.new
+    @klass.class_eval do
+      include InactiveRecord::Base
+    end
+    @object = @klass.new
   end
   
   it "should call the assignment methods for each of the keys in the hash when the attributes are assigned" do
