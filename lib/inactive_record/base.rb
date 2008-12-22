@@ -10,13 +10,13 @@ module InactiveRecord::Base
       attribute_key_name.humanize
     end
     
-    def create(params)
+    def create(params = {})
       obj = new(params)
-      obj.save && obj || false
+      obj.save && obj
     end
     
-    def create!(params)
-      obj = create(params)
+    def create!(params = {})
+      obj = new(params)
       obj.save! && obj
     end
   end

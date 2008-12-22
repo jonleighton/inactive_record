@@ -31,20 +31,18 @@ module InactiveRecord::DelegateAttr
     end
   end
   
-  protected
-  
-    # Add errors from the attributes which are delegated using delegate_attr to a
-    # given to an ActiveRecord::Errors object
-    def add_delegated_attribute_errors_to(errors)
-      self.class.delegated_attrs.each_pair do |record, delegations|
-        record = send(record)
-        record.valid?
-        
-        delegations.each_pair do |from, to|
-          Array(record.errors[to]).each do |error|
-            errors.add(from, error)
-          end
+  # Add errors from the attributes which are delegated using delegate_attr to a
+  # given to an ActiveRecord::Errors object
+  def add_delegated_attribute_errors_to(errors)
+    self.class.delegated_attrs.each_pair do |record, delegations|
+      record = send(record)
+      record.valid?
+      
+      delegations.each_pair do |from, to|
+        Array(record.errors[to]).each do |error|
+          errors.add(from, error)
         end
       end
     end
+  end
 end
