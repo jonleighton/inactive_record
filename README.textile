@@ -1,3 +1,7 @@
+h2. Status
+
+Obsoleted by Active Model
+
 h2. Inactive Record
 
 Make a non ActiveRecord object "quack" like an ActiveRecord.
